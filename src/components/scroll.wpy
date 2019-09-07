@@ -1,0 +1,97 @@
+<style type="less">
+.slide-image {
+  width: 100%;
+  height:100%;
+}
+</style>
+<template>
+  <div class="scroll">
+    <swiper
+      indicator-dots="{{indicatorDots}}"
+      autoplay="{{autoplay}}"
+      interval="{{interval}}"
+      duration="{{duration}}"
+    >
+      <block wx:for="{{imgUrls}}">
+        <swiper-item>
+          <image src="{{item}}" class="slide-image" mode="aspectFill" />
+        </swiper-item>
+      </block>
+    </swiper>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  props: {
+    scroll: {},
+    index: {}
+  },
+  data: {
+    message: '',
+    imgUrls: [],
+    indicatorDots: true,
+    autoplay: false,
+    interval: 5000,
+    duration: 1000
+  },
+
+  methods: {
+    onInitcloud() {
+      wx.cloud.init({
+        env: 'develop-5cwij'
+      });
+      const db = wx.cloud.database({
+        env: 'develop-5cwij'
+      });
+      db.collection('todos')
+        .where({
+          _id: '7f9789b1-e8f1-4f76-a07a-35720cc94251'
+        })
+        .get()
+        .then(res => {
+          this.imgUrls = res.data[0].sliderImg;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      db.collection('todos')
+        .where({
+          _id: 'ce485133-9ef6-4c97-befe-246228fdd2ec'
+        })
+        .get()
+        .then(res => {
+          wx.playBackgroundAudio({
+            dataUrl:
+              'https://6465-develop-5cwij-1256857513.tcb.qcloud.la/audio/%E9%BB%84%E8%B4%AF%E4%B8%AD%20-%20%E6%B5%B7%E9%98%94%E5%A4%A9%E7%A9%BA%20(%E4%BC%B4%E5%A5%8F).mp3?sign=297c384e5c5ebd9b6171873d5c727264&t=1567873332'
+          });
+          console.log(res.data[0].audioSrc);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    cloudfunction() {
+      wx.cloud
+        .callFunction({
+          name: 'sum',
+          data: {
+            a: 2,
+            b: 3
+          }
+        })
+        .then(res => {
+          console.log(res);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  },
+
+  created() {
+    this.onInitcloud();
+    this.cloudfunction();
+  }
+});
+</script>

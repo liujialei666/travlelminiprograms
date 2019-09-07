@@ -1,0 +1,208 @@
+<style type="less">
+.map{
+  width:100%;
+  height:890rpx;
+}
+.map-tab-bar{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height:70rpx;
+  z-index: 1000;
+  font-size: 0;
+  background-color: #fff;
+  border-radius:10rpx;
+  border-bottom: 2rpx solid #ddd;
+  
+}
+.map-tab-li{
+  display: inline-block;
+  width: 50%;
+  height: 70rpx;
+  line-height: 70rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #000000;
+  box-sizing: border-box;
+}
+.map-tab-li.active{
+  color: #6dc5a3 ;
+  border-bottom: 4rpx solid #6dc5a3 ;
+  }
+.map-foot{
+  position: absolute;
+  bottom:0;
+  left: 0;
+  width: 100%;
+  height:80rpx;
+  background-color: #fff;
+  border-radius:10rpx;
+  padding-left: 20rpx;
+}
+.mapName{
+  font-size: 30rpx;
+  color: #000000;
+}
+.mapDesc{
+  font-size: 30rpx;
+  color: #000000;
+}
+
+</style>
+<template>
+  <div class="mapcontainer">
+    <view class="menu-item-api-list docList">
+      <map
+        class="map"
+        longitude="{{longitude}}"
+        latitude="{{latitude}}"
+        include-points="{{points}}"
+        markers="{{markers}}"
+        bindmarkertap="makertap"
+      >
+        <cover-view class="map-tab-bar">
+          <cover-view
+            class="map-tab-li {{item.id == status ? 'active' : ''}}"
+            bindtap="getType"
+            data-type="{{item.id}}"
+            wx:key="aroundListId"
+            wx:for="{{aroundList}}"
+          >{{item.name}}</cover-view>
+        </cover-view>
+        <cover-view class="map-foot" wx:if="{{showmark}}">
+          <cover-view class="mapName">{{textData.name}}</cover-view>
+          <cover-view class="mapDesc">{{textData.desc}}</cover-view>
+        </cover-view>
+      </map>
+    </view>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import amap from '../common/amap-wx';
+wepy.component({
+  props: {
+    scroll: {},
+    index: {}
+  },
+  data: {
+    formIdArr: [],
+    showmark: false,
+    aroundList: [
+      {
+        name: '医院',
+        id: '090100'
+      },
+      {
+        name: '医生',
+        id: '090300'
+      }
+    ],
+    markersData: [],
+    textData: {},
+    status: null,
+    latitude: null,
+    longitude: null,
+    markers: [],
+    points: [],
+    location: '',
+    name: '',
+    address: ''
+  },
+
+  methods: {
+    onInitmapOption() {
+      var that = this;
+      this.showmark = false;
+      wx.getLocation({
+        type: 'gcj02',
+        success(data) {
+          if (data) {
+            that.latitude = data.latitude;
+            that.longitude = data.longitude;
+            that.markers = [
+              {
+                id: 0,
+                latitude: data.latitude,
+                longitude: data.longitude,
+                iconPath: '../images/index.png',
+                width: 32,
+                height: 32
+              }
+            ];
+          }
+        }
+      });
+    },
+    makertap: function(e) {
+      var id = e.markerId;
+      var that = this;
+      that.showMarkerInfo(that.data.markersData, id);
+    },
+    showMarkerInfo: function(data, i) {
+      this.showmark = true;
+      this.textData.name = data[i].name;
+      this.textData.desc = data[i].address;
+    },
+    getType(e) {
+      //获取选择的附近关键词，同时更新状态
+      this.status = e.currentTarget.dataset.type;
+      this.showmark = false;
+      this.getAround(
+        e.currentTarget.dataset.keywords,
+        e.currentTarget.dataset.type
+      );
+    },
+    getAround(keywords, types) {
+      //通过关键词获取附近的点，只取前十个，同时保证十个点在地图中显示
+      var _this = this;
+      var myAmap = new amap.AMapWX({ key: '6d68c2286ecef850fc497536b36400fa' });
+      myAmap.getPoiAround({
+        iconPath: '../images/index.png',
+        iconPathSelected: '../images/index.png',
+        querykeywords: keywords,
+        querytypes: types,
+        location: _this.location,
+        success(data) {
+          if (data.markers) {
+            _this.markersData = data.markers;
+            var markers = [],
+              points = [];
+            for (var value of data.markers) {
+              if (value.id == 0) {
+                _this.name = value.name;
+                _this.address = value.address;
+              }
+              markers.push({
+                id: value.id,
+                latitude: value.latitude,
+                longitude: value.longitude,
+                title: value.name,
+                iconPath: value.iconPath,
+                width: 25,
+                height: 25,
+                anchor: { x: 0.5, y: 1 }
+              });
+              points.push({
+                latitude: value.latitude,
+                longitude: value.longitude
+              });
+            }
+
+            _this.markers = markers;
+            _this.points = points;
+          }
+        },
+        fail: function(info) {
+          wx.showToast({ title: info });
+        }
+      });
+    }
+  },
+
+  created() {
+    this.onInitmapOption();
+  }
+});
+</script>

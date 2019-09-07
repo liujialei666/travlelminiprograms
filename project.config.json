@@ -1,13 +1,18 @@
 {
-  "description": "travle mini programs",
-  "setting": {
-    "urlCheck": true,
-    "es6": false,
-    "postcss": false,
-    "minified": false
-  },
-  "compileType": "miniprogram",
-  "appid": "wxbcf2fe4e0ef70701",
-  "projectname": "travlelminiprograms",
-  "miniprogramRoot": "./weapp"
+	"description": "travle mini programs",
+	"setting": {
+		"urlCheck": true,
+		"es6": false,
+		"postcss": false,
+		"minified": false
+	},
+	"compileType": "miniprogram",
+	"appid": "wxbcf2fe4e0ef70701",
+	"projectname": "travlelminiprograms",
+	"miniprogramRoot": "weapp/",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
+	"libVersion": "2.8.1",
+	"cloudfunctionRoot": "cloudfunction/",
+	"condition": {}
 }
