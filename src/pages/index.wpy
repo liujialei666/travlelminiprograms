@@ -1,64 +1,19 @@
 <style lang="less">
-input {
-  border: 1rpx solid #ccc;
-  display: inline-block;
-  width: 200rpx;
-  border-radius: 5rpx;
-}
-.info {
-  padding-right: 10rpx;
-}
-.userinfo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.userinfo-avatar {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
-}
-
-.userinfo-nickname {
-  color: #aaa;
-}
-.slide {
-  width: 640rpx;
-  display: flex;
-  border: 1rpx solid #ccc;
-  font-size: 28rpx;
-  align-items: center;
-  box-sizing: border-box;
-  .left {
-    width: 750rpx;
-    padding: 20rpx;
-  }
-  .right {
-    display: flex;
-    .right-item {
-      padding: 20rpx 30rpx;
-      background-color: red;
-      color: #fff;
-    }
+.indexcontainer{
+  .nocontent{
+    text-align: center;
+    color:#aaa;
+    margin-bottom: 20rpx;
   }
 }
 </style>
-<wxs module="m1" lang="babel">
-const getTime = (time) => {
-  let date = getDate(time);
-  let hour = date.getHours();
-  let mins = date.getMinutes();
-  let sec = date.getSeconds();
-  let milli = date.getMilliseconds();
-  return `${hour}:${mins}:${sec}.${milli}`;
-}
-module.exports.getTime = getTime;
-</wxs>
 <template>
-  <div>
-    <scroll></scroll>
-    <mymap></mymap>
+  <div class="indexcontainer">
+    <scroll :imgUrls="imglist"></scroll>
+    <div v-for="(item,index) in IndexList" :key="index">
+      <viewItem :imgsrc="item.imageUrl" :title="item.name" :myitemId="item.itemId" @goseeDetail="navaigateDeatil"></viewItem>
+    </div>
+    <div class="nocontent" v-if="nocontent">没有更多内容了...</div>
   </div>
 </template>
 
@@ -81,164 +36,105 @@ wepy.page({
   mixins: [testMixin],
 
   data: {
-    inputmodel: 'v-model',
-    mynum: 20,
-    userInfo: {
-      nickName: '加载中...'
-    },
-    currentTime: +new Date(),
-    setTimeoutTitle: '标题三秒后会被修改',
-    count: 0,
-    netrst: '',
-    groupList: [
-      {
-        id: 1,
-        name: '点击改变',
-        list: [
-          {
-            childid: '1.1',
-            childname: '子项，点我改变'
-          },
-          {
-            childid: '1.2',
-            childname: '子项，点我改变'
-          },
-          {
-            childid: '1.3',
-            childname: '子项，点我改变'
-          }
-        ]
-      },
-      {
-        id: 2,
-        name: '点击改变',
-        list: [
-          {
-            childid: '2.1',
-            childname: '子项，点我改变'
-          },
-          {
-            childid: '2.2',
-            childname: '子项，点我改变'
-          },
-          {
-            childid: '2.3',
-            childname: '子项，点我改变'
-          }
-        ]
-      },
-      {
-        id: 3,
-        name: '点击改变',
-        list: [
-          {
-            childid: '3.1',
-            childname: '子项，点我改变'
-          }
-        ]
-      }
-    ]
+    IndexList: [],
+    page: 0,
+    imglist: [],
+    nocontent:false
   },
 
-  computed: {
-    // ...mapState([ 'counter' ]),
-    // testcomputed () {
-    //   return 'computed - ' + this.mynum;
-    // }
-  },
+  computed: {},
 
   methods: {
-    tap() {
-      throw 'can not go here';
-    },
-    plus() {
-      this.mynum++;
-    },
-    toast() {
-      let promise = this.$invoke('toast', 'show', {
-        title: '自定义标题',
-        img:
-          'https://raw.githubusercontent.com/kiinlam/wetoast/master/images/star.png'
+    onInitcloud() {
+      const db = wx.cloud.database({
+        env: 'develop-5cwij'
       });
-
-      promise.then(d => {
-        console.log('toast done');
-      });
-    },
-    mixintap() {
-      console.log('do noting from ' + this.$is);
-    },
-    communicate() {
-      let counters = this.$children.filter(
-        com => com.$is === 'components/counter'
-      );
-
-      // Get children counter
-      counters[0].num++;
-      counters[1].num--;
-
-      eventHub.$emit('app-launch', { a: 1 }, { b: 2 });
-    },
-    request() {
-      let self = this;
-      let i = 10;
-      let map = [
-        'MA==',
-        'MQo=',
-        'Mg==',
-        'Mw==',
-        'NA==',
-        'NQ==',
-        'Ng==',
-        'Nw==',
-        'OA==',
-        'OQ=='
-      ];
-      while (i--) {
-        wx.request({
-          url:
-            'https://www.madcoder.cn/tests/sleep.php?time=1&t=css&c=' +
-            map[i] +
-            '&i=' +
-            i,
-          success: function(d) {
-            if (d.statusCode !== 200) {
-              self.netrst += d.statusCode + '.';
-            } else {
-              self.netrst += d.data + '.';
-            }
-          }
+      db.collection('todos')
+        .where({
+          _id: '7f9789b1-e8f1-4f76-a07a-35720cc94251'
+        })
+        .get()
+        .then(res => {
+          this.imglist = res.data[0].sliderImg;
+        })
+        .catch(err => {
+          console.log(err);
         });
-      }
+      db.collection('todos')
+        .where({
+          _id: 'ce485133-9ef6-4c97-befe-246228fdd2ec'
+        })
+        .get()
+        .then(res => {
+          wx.playBackgroundAudio({
+            dataUrl:
+              'https://6465-develop-5cwij-1256857513.tcb.qcloud.la/audio/%E9%BB%84%E8%B4%AF%E4%B8%AD%20-%20%E6%B5%B7%E9%98%94%E5%A4%A9%E7%A9%BA%20(%E4%BC%B4%E5%A5%8F).mp3?sign=297c384e5c5ebd9b6171873d5c727264&t=1567873332'
+          });
+          console.log(res.data[0].audioSrc);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
-    counterEmit(num) {
-      console.log(`${this.$is} receive event, the number is: ${num}`);
+    onInitviewList() {
+      const db = wx.cloud.database({
+        env: 'develop-5cwij'
+      });
+      db.collection('indexListArray')
+        .where({
+          key: 'List'
+        })
+        .skip(this.page) // 跳过结果集中的前 10 条，从第 11 条开始返回
+        .limit(10) // 限制返回数量为 10 条
+        .get()
+        .then(res => {
+          console.log(res)
+          if(res.data.length>0){
+            for(let i=0;i<res.data.length;i++){
+              this.IndexList.push({
+                 imageUrl:res.data[i].imageUrl,
+                 name:res.data[i].name,
+                 itemId:res.data[i].itemId
+              })
+            }
+            console.log(this.IndexList)
+          }else{
+            this.nocontent=true;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    navaigateDeatil(id){
+      console.log("111")
+      console.log(id)
     }
   },
 
+  onPullDownRefresh() {
+     wx.stopPullDownRefresh();
+  },
+
+  onReachBottom() {
+    this.page=this.page+10;
+    this.onInitviewList();
+  },
+
   created() {
-    let self = this;
-    self.currentTime = +new Date();
-
-    self.setTimeoutTitle = '标题三秒后会被修改';
-    setTimeout(() => {
-      self.setTimeoutTitle = '到三秒了';
-    }, 3000);
-
-    wx.getUserInfo({
-      success(res) {
-        self.userInfo = res.userInfo;
-      }
-    });
+    this.onInitcloud();
+    this.onInitviewList();
   }
 });
 </script>
 <config>
 {
-    navigationBarTitleText: '1111',
+    navigationBarTitleText: '首页',
+    enablePullDownRefresh: true,
     usingComponents: {
        scroll: '../components/scroll',
-       mymap: '../components/mymap'
+       mymap: '../components/mymap',
+       viewItem: '../components/viewItem'
     }
 }
 </config>

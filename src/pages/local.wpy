@@ -1,0 +1,54 @@
+<style lang="less">
+
+
+</style>
+
+<template>
+  <div>
+    <mymap></mymap>
+  </div>
+</template>
+
+<script>
+import wepy from '@wepy/core';
+import eventHub from '../common/eventHub';
+import { mapState } from '@wepy/x';
+import store from '../store';
+import testMixin from '../mixins/test';
+import amap from '../common/amap-wx';
+
+wepy.page({
+  store,
+  config: {
+    navigationBarTitleText: '当地'
+  },
+
+  hooks: {},
+
+  mixins: [testMixin],
+
+  data: {
+
+  },
+
+  computed: {
+    
+  },
+
+  methods: {
+  
+  },
+
+  created() {
+
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '当地',
+    usingComponents: {
+       mymap: '../components/mymap'
+    }
+}
+</config>

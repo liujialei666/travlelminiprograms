@@ -2,6 +2,7 @@
 {
     pages: [
       'pages/index',
+      'pages/local',
       'pages/recommend'
 
     ],
@@ -13,23 +14,23 @@
     requiredBackgroundModes: ["audio", "location"],
     window: {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
+      navigationBarBackgroundColor: '#f8c300',
       navigationBarTitleText: 'WeChat',
       navigationBarTextStyle: 'black'
     },
     tabBar: {
-    color:'#000',
-    selectedColor:'red',
+    color:'#aaa',
+    selectedColor:'#000',
     list: [{
       pagePath: "pages/index",
       text: "首页",
       iconPath:"./images/index.png",
       selectedIconPath:"./images/indexactive.png"
     }, {
-      pagePath: "pages/recommend",
-      text: "日志",
-      iconPath:"./images/recommend.png",
-      selectedIconPath:"./images/recommendactive.png"
+      pagePath: "pages/local",
+      text: "当地",
+      iconPath:"./images/location.png",
+      selectedIconPath:"./images/locationactive.png"
     }]
   },
 }
@@ -65,6 +66,9 @@ wepy.app({
   },
 
   onLaunch() {
+    wx.cloud.init({
+      env: 'develop-5cwij'
+    });
     eventHub.$on('app-launch', (...args) => {
       console.log('app-launch event emitted, the params are:');
       console.log(args);

@@ -27,8 +27,8 @@
   box-sizing: border-box;
 }
 .map-tab-li.active{
-  color: #6dc5a3 ;
-  border-bottom: 4rpx solid #6dc5a3 ;
+  color: #f8c300 ;
+  border-bottom: 4rpx solid #f8c300 ;
   }
 .map-foot{
   position: absolute;
@@ -88,15 +88,15 @@ wepy.component({
   },
   data: {
     formIdArr: [],
-    showmark: false,
+    showmark: true,
     aroundList: [
       {
-        name: '医院',
-        id: '090100'
+        name: '餐饮服务',
+        id: '050000'
       },
       {
-        name: '医生',
-        id: '090300'
+        name: '住宿服务',
+        id: '100000'
       }
     ],
     markersData: [],
@@ -115,32 +115,48 @@ wepy.component({
     onInitmapOption() {
       var that = this;
       this.showmark = false;
-      wx.getLocation({
-        type: 'gcj02',
-        success(data) {
-          if (data) {
-            that.latitude = data.latitude;
-            that.longitude = data.longitude;
-            that.markers = [
+      // wx.getLocation({
+      //   type: 'gcj02',
+      //   success(data) {
+      //     if (data) {
+      //       console.log(data)
+      //       that.latitude = data.latitude;
+      //       that.longitude = data.longitude;
+      //       that.markers = [
+      //         {
+      //           id: 0,
+      //           latitude: data.latitude,
+      //           longitude: data.longitude,
+      //           iconPath: '',
+      //           width: 32,
+      //           height: 32
+      //         }
+      //       ];
+      //     }
+      //   }
+      // });
+            this.latitude = 43.6;
+            this.longitude = 93 ;
+            this.markers = [
               {
                 id: 0,
-                latitude: data.latitude,
-                longitude: data.longitude,
-                iconPath: '../images/index.png',
+                latitude: 43.6,
+                longitude: 93 ,
+                iconPath: '',
                 width: 32,
                 height: 32
               }
             ];
-          }
-        }
-      });
     },
     makertap: function(e) {
-      var id = e.markerId;
+      console.log(e)
+      var id = e.$wx.markerId;
       var that = this;
-      that.showMarkerInfo(that.data.markersData, id);
+      that.showMarkerInfo(that.markersData, id);
     },
     showMarkerInfo: function(data, i) {
+      console.log(data)
+      console.log(i)
       this.showmark = true;
       this.textData.name = data[i].name;
       this.textData.desc = data[i].address;
@@ -159,11 +175,11 @@ wepy.component({
       var _this = this;
       var myAmap = new amap.AMapWX({ key: '6d68c2286ecef850fc497536b36400fa' });
       myAmap.getPoiAround({
-        iconPath: '../images/index.png',
-        iconPathSelected: '../images/index.png',
+        iconPath: '../images/nowlocation.png',
+        iconPathSelected: '../images/nowlocation.png',
         querykeywords: keywords,
         querytypes: types,
-        location: _this.location,
+        location:'93,43.6', 
         success(data) {
           if (data.markers) {
             _this.markersData = data.markers;
@@ -174,6 +190,7 @@ wepy.component({
                 _this.name = value.name;
                 _this.address = value.address;
               }
+              console.log(value)
               markers.push({
                 id: value.id,
                 latitude: value.latitude,
