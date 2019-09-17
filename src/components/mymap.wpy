@@ -1,22 +1,21 @@
 <style type="less">
-.map{
-  width:100%;
-  height:890rpx;
+.map {
+  width: 100%;
+  height: 890rpx;
 }
-.map-tab-bar{
+.map-tab-bar {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height:70rpx;
+  height: 70rpx;
   z-index: 1000;
   font-size: 0;
   background-color: #fff;
-  border-radius:10rpx;
+  border-radius: 10rpx;
   border-bottom: 2rpx solid #ddd;
-  
 }
-.map-tab-li{
+.map-tab-li {
   display: inline-block;
   width: 50%;
   height: 70rpx;
@@ -26,29 +25,28 @@
   color: #000000;
   box-sizing: border-box;
 }
-.map-tab-li.active{
-  color: #f8c300 ;
-  border-bottom: 4rpx solid #f8c300 ;
-  }
-.map-foot{
+.map-tab-li.active {
+  color: #f8c300;
+  border-bottom: 4rpx solid #f8c300;
+}
+.map-foot {
   position: absolute;
-  bottom:0;
+  bottom: 0;
   left: 0;
   width: 100%;
-  height:80rpx;
+  height: 80rpx;
   background-color: #fff;
-  border-radius:10rpx;
+  border-radius: 10rpx;
   padding-left: 20rpx;
 }
-.mapName{
+.mapName {
   font-size: 30rpx;
   color: #000000;
 }
-.mapDesc{
+.mapDesc {
   font-size: 30rpx;
   color: #000000;
 }
-
 </style>
 <template>
   <div class="mapcontainer">
@@ -135,28 +133,28 @@ wepy.component({
       //     }
       //   }
       // });
-            this.latitude = 43.6;
-            this.longitude = 93 ;
-            this.markers = [
-              {
-                id: 0,
-                latitude: 43.6,
-                longitude: 93 ,
-                iconPath: '',
-                width: 32,
-                height: 32
-              }
-            ];
+      this.latitude = 43.6;
+      this.longitude = 93;
+      this.markers = [
+        {
+          id: 0,
+          latitude: 43.6,
+          longitude: 93,
+          iconPath: '',
+          width: 32,
+          height: 32
+        }
+      ];
     },
     makertap: function(e) {
-      console.log(e)
+      console.log(e);
       var id = e.$wx.markerId;
       var that = this;
-      that.showMarkerInfo(that.markersData, id);
+      // that.showMarkerInfo(that.markersData, id);
     },
     showMarkerInfo: function(data, i) {
-      console.log(data)
-      console.log(i)
+      console.log(data);
+      console.log(i);
       this.showmark = true;
       this.textData.name = data[i].name;
       this.textData.desc = data[i].address;
@@ -179,7 +177,7 @@ wepy.component({
         iconPathSelected: '../images/nowlocation.png',
         querykeywords: keywords,
         querytypes: types,
-        location:'93,43.6', 
+        location: '93,43.6',
         success(data) {
           if (data.markers) {
             _this.markersData = data.markers;
@@ -190,16 +188,27 @@ wepy.component({
                 _this.name = value.name;
                 _this.address = value.address;
               }
-              console.log(value)
+              console.log(value);
               markers.push({
                 id: value.id,
                 latitude: value.latitude,
                 longitude: value.longitude,
-                title: value.name,
+                // title: value.name,
                 iconPath: value.iconPath,
                 width: 25,
                 height: 25,
-                anchor: { x: 0.5, y: 1 }
+                anchor: { x: 0.5, y: 1 },
+                label: {
+                  content: value.name,
+                  color: 'green',
+                  fontSize: 12,
+                  borderRadius: 5,
+                  bgColor: '#fff',
+                  padding: 3,
+                  anchorX: -28,
+                  anchorY: -45,
+                  textAlign: 'center'
+                }
               });
               points.push({
                 latitude: value.latitude,
